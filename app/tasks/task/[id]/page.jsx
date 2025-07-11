@@ -1,9 +1,8 @@
+import { fetchTodoById } from "@/lib/api";
 
 // ✅ Métadonnées dynamiques avec désérialisation safe
-export async function generateMetadata(props) {
-  const { id } = await Promise.resolve(props.params);
-  const res = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
-  const todo = await res.json();
+export async function generateMetadata({ params }) {
+  const todo = await fetchTodoById(params.id);
 
   return {
     title: `Tâche n°${todo.id}`,
@@ -13,7 +12,7 @@ export async function generateMetadata(props) {
 
 // ✅ Page affichant les détails
 export default async function TaskPage(props) {
-    const { id } = await Promise.resolve(props.params);
+  const { id } = await Promise.resolve(props.params);
   const res = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
   const todo = await res.json();
 
@@ -21,7 +20,7 @@ export default async function TaskPage(props) {
     <div>
       <h1>Tâche #{todo.id}</h1>
       <p>{todo.title}</p>
-      <p>Status : {todo.completed ? 'Terminée' : 'En cours'}</p>
+      <p>Status : {todo.completed ? "Terminée" : "En cours"}</p>
     </div>
   );
 }

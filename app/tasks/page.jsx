@@ -1,4 +1,5 @@
 
+import { fetchTodos } from '@/lib/api';
 import Link from 'next/link';
 
 export async function generateMetadata() {
@@ -9,8 +10,7 @@ export async function generateMetadata() {
 }
 
 export default async function TasksPage() {
-  const res = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=10');
-  const todos = await res.json();
+  const todos = await fetchTodos();
 
   return (
     <div>
