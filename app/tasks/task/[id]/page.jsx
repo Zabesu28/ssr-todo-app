@@ -1,6 +1,19 @@
-import { fetchTodoById } from "@/lib/api";
+export async function fetchTodoById(id) {
+  try {
+    const res = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
 
-// ✅ Métadonnées dynamiques avec désérialisation safe
+    if (!res.ok) {
+      return { error: `Erreur HTTP ${res.status} - Tâche ${id} introuvable` };
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Erreur dans fetchTodoById :", error);
+    return { error: error.message || "Erreur inconnue" };
+  }
+}
+
 export async function generateMetadata({ params }) {
   const todo = await fetchTodoById(params.id);
 
@@ -10,17 +23,23 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// ✅ Page affichant les détails
-export default async function TaskPage(props) {
-  const { id } = await Promise.resolve(props.params);
-  const res = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
-  const todo = await res.json();
+export default async function TaskPage({ params }) {
+  const todo = await fetchTodoById(params.id);
 
-  return (
-    <div>
-      <h1>Tâche #{todo.id}</h1>
-      <p>{todo.title}</p>
-      <p>Status : {todo.completed ? "Terminée" : "En cours"}</p>
-    </div>
-  );
+  if (todo.error) {
+    return (
+      <div>
+        <h1>Erreur</h1>
+        <p>{todo.error}</p>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h1>Tâche #{todo.id}</h1>
+        <p>{todo.title}</p>
+        <p>Status : {todo.completed ? "Terminée" : "En cours"}</p>
+      </div>
+    );
+  }
 }
